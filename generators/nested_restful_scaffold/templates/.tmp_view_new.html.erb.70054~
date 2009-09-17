@@ -1,0 +1,21 @@
+<h1>New <%= singular_name %></h1>
+
+<%%= error_messages_for :<%= singular_name %> %>
+
+<%% form_for(@<%= singular_name %><%= ", :url => " + nested_resource_path(singular_name, :instance_object => true, :plural => true) if command_has_resources %>) do |f| %>
+<% for attribute in attributes -%>
+  <p>
+    <b><%= attribute.column.human_name %></b><br />
+	<% if attribute.type.to_s != "references" || options[:skip_select] %>
+    <%%= f.<%= attribute.field_type %> :<%= attribute.name %> %>
+	<% else %>
+	<%%= select("<%= singular_name %>", "<%= attribute.name %>_id", <%= attribute.name.classify %>.find(:all<%= generate_conditions singular_name, attribute.name %>).collect{|p| [p.name, p.id]}) %>
+	<% end %>
+  </p>
+<% end -%>
+  <p>
+    <%%= f.submit "Create" %>
+  </p>
+<%% end %>
+
+<%%= link_to 'Back', <%= nested_resource_path singular_name, :instance_object => true, :plural => true %> %>

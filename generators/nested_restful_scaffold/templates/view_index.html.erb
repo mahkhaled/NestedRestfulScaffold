@@ -1,0 +1,26 @@
+<h1>Listing <%= plural_name %></h1>
+
+<table>
+  <tr>
+<% for attribute in attributes -%>
+    <th><%= attribute.column.human_name %></th>
+<% end -%>
+  </tr>
+
+<%% for <%= singular_name %> in @<%= plural_name %> %>
+  <tr>
+<% for attribute in attributes -%>
+    <td><%%=h <%= singular_name %>.<%= attribute.name %> %></td>
+<% end -%>
+    <td><%%= link_to 'Show', <%= nested_resource_path singular_name %> %></td>
+    <td><%%= link_to 'Edit', <%= nested_resource_path singular_name, :prefix => "edit" %> %></td>
+    <td><%%= link_to 'Destroy', <%= nested_resource_path singular_name %>, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<%% end %>
+</table>
+
+<br />
+
+<%%= link_to 'New <%=  singular_name %>', <%= nested_resource_path singular_name, :prefix => "new", :add_params => false %> %>
+<br />
+<%%= link_to 'Return to <%=  parent_resource_name.pluralize %>', <%= nested_resource_path singular_name, :add_params => false, :plural => true, :reject_last => true %> %>

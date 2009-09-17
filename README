@@ -1,0 +1,96 @@
+= Nested Restful Scaffold
+
+== What is NestedRestfulScaffold
+NestedRestfulScaffold is a gem built by BadrIT (http://www.badrit.com) for easily generating controller, views, model and routes of nested resources.
+
+== Why NestedRestfulScaffold
+The story begins when I was working on a project at BadrIT (http://www.badrit.com) using Ruby on Rails.
+We needed to generate simple scaffold controller, views, models and routes for many nested resources.
+There were a huge number of resources and nested resources and sometimes the length of nesting was more than two.
+The problem I faced that I need to create them with rails scaffold generator then I need to update all generated controllers, views and models.
+* I need to update routes.rb to handle nested paths like /libraries/1/books
+* In the controller I need to be sure I am accessing the correct resource in the nested chain.
+* All ActiveRecord calls in the controller must be scoped.
+* Views will have a lot of work to support nested forms and links.
+* Create the Active Record associations in my models. 
+This was a big overhead to do all of that with all resources, so I decided to create a generator to do all that work for me.
+
+== How to install
+To install QuickMagick just type at your command line:
+  gem install nested_restful_scaffold
+... and it's done.
+You don't have to install any libraries or compile code from source.
+
+== How to use
+Usage:
+  script/generate nested_restful_scaffold ModelName [field:type, field:type, resource1,resource2,...:resources]
+
+Lets start with an example of a library resource and each library has books and each book has pages.
+
+=== Library Resource
+Use the following command to create library resource
+  script/generate nested_restful_scaffold library name:string address:text
+It will use rails scaffold generator because there isn't any nested resources included in the previous command.
+
+=== Book & Page Resources
+Use the following command to create library resource
+  script/generate nested_restful_scaffold book name:string description:text library:references library:resources
+  script/generate nested_restful_scaffold page contents:text book:references library,book:resources
+
+As it is shown, we used <b>library:resources</b> for books resources and <b>library,book:resources</b> for pages resources.
+They will do the same job of rails scaffold generator in addition to the following: N.B. I will explain the result of the pages generation and it will be the same for book resources.
+
+* It will update the routes.rb file with libraries, books and pages routing to be as the following:
+    map.resources :libraries do |library|
+      library.resources :books do |book|
+        book.resources :pages
+      end
+    end
+If you run rake routes, we can see the pages routes as the following:
+ library_book_pages GET    /libraries/:library_id/books/:book_id/pages                  {:controller=>"pages", :action=>"index"}
+    formatted_library_book_pages GET    /libraries/:library_id/books/:book_id/pages.:format          {:controller=>"pages", :action=>"index"}
+                                 POST   /libraries/:library_id/books/:book_id/pages                  {:controller=>"pages", :action=>"create"}
+                                 POST   /libraries/:library_id/books/:book_id/pages.:format          {:controller=>"pages", :action=>"create"}
+           new_library_book_page GET    /libraries/:library_id/books/:book_id/pages/new              {:controller=>"pages", :action=>"new"}
+ formatted_new_library_book_page GET    /libraries/:library_id/books/:book_id/pages/new.:format      {:controller=>"pages", :action=>"new"}
+          edit_library_book_page GET    /libraries/:library_id/books/:book_id/pages/:id/edit         {:controller=>"pages", :action=>"edit"}
+formatted_edit_library_book_page GET    /libraries/:library_id/books/:book_id/pages/:id/edit.:format {:controller=>"pages", :action=>"edit"}
+               library_book_page GET    /libraries/:library_id/books/:book_id/pages/:id              {:controller=>"pages", :action=>"show"}
+     formatted_library_book_page GET    /libraries/:library_id/books/:book_id/pages/:id.:format      {:controller=>"pages", :action=>"show"}
+                                 PUT    /libraries/:library_id/books/:book_id/pages/:id              {:controller=>"pages", :action=>"update"}
+                                 PUT    /libraries/:library_id/books/:book_id/pages/:id.:format      {:controller=>"pages", :action=>"update"}
+                                 DELETE /libraries/:library_id/books/:book_id/pages/:id              {:controller=>"pages", :action=>"destroy"}
+                                 DELETE /libraries/:library_id/books/:book_id/pages/:id.:format      {:controller=>"pages", :action=>"destroy"}
+          
+* Pages controller has new method book to get its parent resource
+   protected 
+    def book
+      @book ||= Library.find(params[:library_id]).books.find(params[:book_id])
+    end
+* All ActiveRecord calls for page resource will be through its book to be well scoped.
+  @pages = book.pages
+* The most bunch of work in in views files
+    <td><%= link_to 'Show', library_book_page_path(page.book.library,page.book,page) %></td>
+    <td><%= link_to 'Edit', edit_library_book_page_path(page.book.library,page.book,page) %></td>
+    <td><%= link_to 'Destroy', library_book_page_path(page.book.library,page.book,page), :confirm => 'Are you sure?', :method => :delete %></td>
+  and two links at the end of the html page to new page and to return to books page
+    <%= link_to 'New page', new_library_book_page_path %>
+    <%= link_to 'Return to books', library_books_path %>
+* In book.rb model file, there will be new line added to define association
+  has_many :pages
+  and in page.rb model file, also there will be new line added
+  belongs_to :book
+  
+== Conclusion
+NestedRestfulScaffold is very easy to install, very easy to use and allows you to generate all that work for you.
+
+It will be very suitable for you if you are building a RESTful API or application with nested resources.
+
+It will reduce the overhead of updating controller, views, models and routes.
+
+
+For more information on nested resources check:
+
+http://adam.blog.heroku.com/past/2007/12/20/nested_resources_in_rails_2
+
+http://www.akitaonrails.com/2007/12/12/rolling-with-rails-2-0-the-first-full-tutorial

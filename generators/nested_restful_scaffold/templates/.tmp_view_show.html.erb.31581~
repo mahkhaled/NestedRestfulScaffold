@@ -1,0 +1,9 @@
+<% for attribute in attributes -%>
+<p>
+  <b><%= attribute.column.human_name %>:</b>
+  <%%=h @<%= singular_name %>.<%= attribute.name %><%= ".name" if attribute.type.to_s == "references" && !options[:skip_select]  %> %>
+</p>
+<% end -%>
+
+<%%= link_to 'Edit', <%= nested_resource_path(singular_name, :prefix => "edit", :instance_object => true) %> %> |
+<%%= link_to 'Back', <%= nested_resource_path singular_name, :instance_object => true, :plural => true %> %>

@@ -1,0 +1,31 @@
+Description:
+    Scaffolds an entire resource, from model and migration to controller and
+    views, along with a full test suite. The resource is ready to use for your 
+    restful, resource-oriented application.
+
+Usage:
+    Pass the name of the model, either CamelCased or under_scored, as the first
+    argument, an optional list of attribute pairs, and an optional list of 
+    resources tree comma separated.
+
+    Attribute pairs are column_name:sql_type arguments specifying the
+    model's attributes. Timestamps are added by default, so you don't have to
+    specify them by hand as 'created_at:datetime updated_at:datetime'.
+
+    You don't have to think up every attribute up front, but it helps to
+    sketch out a few so you can start working with the resource immediately.
+    
+    Resources list is an ordered list of nested parent resources. They are comma
+    separated ordered from root to child. 'library,book,page:resources'
+
+    For example, `nested_restful_scaffold page page_number:integer contents:text 
+    book:references library,book:resources`
+    gives you a model with attributes page_number, contents and book_id, a controller that handles
+    the create/show/update/destroy, forms to create and edit your posts, and
+    an index that lists them all, as well as a book.resources :pages
+    declaration in config/routes.rb.
+
+Examples:
+    `script/generate nested_restful_scaffold library name:string address:text`
+ 		`script/generate nested_restful_scaffold book name:string description:text library:references library:resources `
+		`script/generate nested_restful_scaffold page page_number:integer contents:text book:references library,book:resources`
