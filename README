@@ -16,7 +16,7 @@ The problem I faced that I need to create them with rails scaffold generator the
 This was a big overhead to do all of that with all resources, so I decided to create a generator to do all that work for me.
 
 == How to install
-To install QuickMagick just type at your command line:
+To install NestedRestfulScaffold just type at your command line:
   gem install nested_restful_scaffold
 ... and it's done.
 You don't have to install any libraries or compile code from source.
@@ -81,7 +81,7 @@ formatted_edit_library_book_page GET    /libraries/:library_id/books/:book_id/pa
   and in page.rb model file, also there will be new line added
   belongs_to :book
   
-== Conclusion
+== Summary
 NestedRestfulScaffold is very easy to install, very easy to use and allows you to generate all that work for you.
 
 It will be very suitable for you if you are building a RESTful API or application with nested resources.
